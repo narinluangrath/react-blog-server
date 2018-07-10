@@ -1,47 +1,27 @@
 const express = require( 'express' )
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var cors = require('cors')
+const cors = require( 'cors' )
+const mongoose = require( 'mongoose' )
+const bodyParser = require( 'body-parser' )
 
-const app = express()
-app.use( cors() )
+const createRouting = require( './routes' )
+const { MONGO_ENDPOINT } = require( './config' )
 
-GOOGLE_CLIENT_ID = '529538039671-ia4lal2d2pj7tn88a15b3k9u45jk08bn.apps.googleusercontent.com'
+// Create MongoDB connection
+mongoose.connect( MONGO_ENDPOINT )
+const db = mongoose.connection
+db.on( 'error', console.error.bind( console, 'connection error:' ) )
+db.once( 'open', function() {
 
-// passport.use(new GoogleStrategy({
-//     clientID: GOOGLE_CLIENT_ID,
-//     clientSecret: GOOGLE_CLIENT_SECRET,
-//     callbackURL: "http://www.example.com/auth/google/callback"
-//   },
-//   function(accessToken, refreshToken, profile, cb) {
+  // MongoDB is initialized, start application.
 
-//     console.log( { accessToken, refreshToken, profile } )
+  // Create express app, load middleware, routing
+  const app = express()
+  app.use( cors() )
+  app.use( bodyParser.json() )
+  createRouting( app )
 
-//     // User.findOrCreate({ googleId: profile.id }, function (err, user) {
-//     //   return cb(err, user);
-//     });
-//   }
-// ));
-// app.use(passport.initialize());
-// app.use(passport.session());
+  // Start the server
+  app.listen( 3000, () => console.log( 'Running on port 3000...' ) )
 
-const { OAuth2Client } = require( 'google-auth-library' );
-const client = new OAuth2Client(GOOGLE_CLIENT_ID);
-async function verify( token ) {
-  const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: GOOGLE_CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
-      // Or, if multiple clients access the backend:
-      //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
-  });
-  const payload = ticket.getPayload();
-  const userid = payload['sub'];
-  // If request specified a G Suite domain:
-  //const domain = payload['hd'];
-}
-// verify( token ).catch(console.error);
+} )
 
-app.get('/', (req, res) => res.send('Hello World!'))
-
-app.post( '/verify', ( req, res ) => {console.log( req ); res.send( 'Testing...' )} )
-
-app.listen(3000, () => console.log('Example app listening on port 3000!'))
