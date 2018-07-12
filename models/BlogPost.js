@@ -6,6 +6,7 @@ const BlogPostSchema = new Schema({
   title : { type : String, required : true, unique : false },
   body : { type : String, required : true, unique : false },
   date : { type : Date, required : false, unique : false },
+  image : { type : String, required : false, unique : false },
 })
 
 const BlogPost = mongoose.model( 'BlogPost', BlogPostSchema )

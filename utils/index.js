@@ -12,4 +12,31 @@ async function decriptToken( token ) {
   return ticket.getPayload()
 }
 
-module.exports = { decriptToken }
+// https://stackoverflow.com/questions/20267939/nodejs-write-base64-image-file
+function decodeBase64Image( dataString, name ) {
+  console.log( dataString )
+  var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
+  var response = {};
+
+  if (matches.length !== 3) {
+    return new Error('Invalid input string');
+  }
+
+  response.type = matches[1];
+  response.data = new Buffer(matches[2], 'base64');
+
+  const type = reponse.type.split( '/' )[1] 
+
+  if ( !type ) {
+    return new Error( 'No image type' )
+  }
+
+  const file = `${__dirname}/../public/${name}.${type}`
+  fs.writeFileSync( file, response.data )
+  return file;
+}
+
+module.exports = {
+  decriptToken,
+  decodeBase64Image, 
+}

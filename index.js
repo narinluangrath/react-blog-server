@@ -2,6 +2,7 @@ const express = require( 'express' )
 const cors = require( 'cors' )
 const mongoose = require( 'mongoose' )
 const bodyParser = require( 'body-parser' )
+const path = require( 'path' )
 
 const createRouting = require( './routes' )
 const { MONGO_ENDPOINT } = require( './config' )
@@ -17,7 +18,9 @@ db.once( 'open', function() {
   // Create express app, load middleware, routing
   const app = express()
   app.use( cors() )
-  app.use( bodyParser.json() )
+  app.use(bodyParser({ limit: '50mb' }))
+  const publicFolder = path.join( __dirname, '/public' )
+  app.use(express.static( publicFolder ))
   createRouting( app )
 
   // Start the server
