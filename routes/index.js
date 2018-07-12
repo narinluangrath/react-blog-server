@@ -1,51 +1,46 @@
-const uniqid = require('uniqid');
-var base64Img = require('base64-img');
-const path = require('path')
+const uniqid = require( 'uniqid' )
 
-const { decriptToken, decodeBase64Image } = require( '../utils' )
-const { BlogPost } = require( '../models' )
+const utils = require( '../utils' )
 
-function createRouting( app ) {
+function createRouting( app, bq ) {
 
   // Get all the posts
   app.get( '/', async ( req, res ) => {
 
-    const userInfo = await decriptToken( req.query.token )
-    BlogPost.find( {} )
-            .where( 'userId' )
-            .equals( userInfo.sub )
-            .exec( ( err, blogPosts ) => res.send( blogPosts ) )
+    try {
+    
+      console.log( req )
+      const userInfo = await utils.decriptToken( req.query.token )
+      const userId = userInfo && userInfo.sub
+      const result = await utils.get( bq, userId )
+      res.send( result )
+
+    } catch ( e ) {
+      
+      console.error( 'Error on route / ', e )
+
+    }
 
   })
 
   // Create a post
   app.post( '/compose', async ( req, res ) => { 
 
-    const body = req.body
-    const userInfo = await decriptToken( body.token )
-    const publicFolder = path.join( __dirname, '../public' )
-    const name = uniqid()
+    try {
 
-    // hacky solution
-    const data = body.image.split( ';' ) 
-    const type = data[0].split( '/' )[1] == 'jpeg' ? 'jpg' : data[0].split( '/' )[1]
-    const imageFile = base64Img.imgSync( data[0] + ';' + data[2], publicFolder, name )
+      const { title, body, image, token } = req.body
+      console.log( req.body )
+      const userInfo = await utils.decriptToken( token )
+      const userId = userInfo.sub
 
-    const newPost = { 
-      userId : userInfo.sub || '', 
-      title : body.title || '', 
-      body : body.body || '', 
-      image : name + '.' + type || '',
-      date : new Date() 
+      await utils.insert( bq, userId, uniqid(), title, body, image, Date.now() )
+      res.send( { status : 'ok' } )
+
+    } catch ( e ) {
+
+      console.error( 'Error on route /compose ', e )
+
     }
-    BlogPost.create( newPost, ( err, _ ) => {
-      if ( err ) { 
-        console.error( err ) 
-      } else { 
-        console.log( res )
-        res.send( { status : 'okay' } )
-      }
-    })
 
   })
 
