@@ -31,7 +31,7 @@ async function insert( bq, userId, id, title, body, image, date ) {
 
   } catch ( e ) {
 
-    console.error( 'Error inserting data: ', e )
+    console.error( 'Error inserting data: ', JSON.stringify( e ) )
 
   }
 

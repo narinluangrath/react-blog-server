@@ -9,7 +9,6 @@ function createRouting( app, bq ) {
 
     try {
     
-      console.log( req )
       const userInfo = await utils.decriptToken( req.query.token )
       const userId = userInfo && userInfo.sub
       const result = await utils.get( bq, userId )
@@ -29,7 +28,6 @@ function createRouting( app, bq ) {
     try {
 
       const { title, body, image, token } = req.body
-      console.log( req.body )
       const userInfo = await utils.decriptToken( token )
       const userId = userInfo.sub
 
