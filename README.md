@@ -1,6 +1,6 @@
 # Simple Journal (Server)
 
-The Node.js backend for [simple-journal]](https://github.com/narinluangrath/simple-blog-ui).  
+The Node.js backend for [simple-journal](https://github.com/narinluangrath/simple-blog-ui).  
 
 ## To run locally
 
