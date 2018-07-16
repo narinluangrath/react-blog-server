@@ -14,7 +14,6 @@ app.use( bodyParser({ limit : '50mb' }) )
 // Add routing
 const bq = new BigQuery({
   projectId : PROJECT_ID,
-  keyFilename : KEY_FILENAME
 })
 createRouting( app, bq )
 
