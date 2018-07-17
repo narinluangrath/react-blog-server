@@ -4,6 +4,10 @@ const utils = require( '../utils' )
 
 function createRouting( app, bq ) {
 
+  app.get( '/status', ( req, res ) => {
+    res.send( { status : 'ok' } )
+  })
+
   // Get all the posts
   app.get( '/', async ( req, res ) => {
 
