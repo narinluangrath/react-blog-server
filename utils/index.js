@@ -14,6 +14,26 @@ async function decriptToken( token ) {
 
 }
 
+async function setup( bq, userId ) {
+
+  try {
+
+    const [ dataset, ] = await bq.dataset( 'users' ).get( { autoCreate : true } )
+    const table = dataset.table( userId )
+
+    const [ tableExists, ] = await table.exists()
+    if ( !tableExists ) {
+      await dataset.createTable( userId, { schema : BlogPost } )
+    }
+
+  } catch ( e ) {
+
+    console.error( 'Error setting up user table: ', JSON.stringify( e ) )
+
+  }  
+
+}
+
 async function insert( bq, userId, id, title, body, image, date ) {
 
   try {
@@ -23,7 +43,7 @@ async function insert( bq, userId, id, title, body, image, date ) {
 
     const [ tableExists, ] = await table.exists()
     if ( !tableExists ) {
-      dataset.createTable( userId, { schema : BlogPost } )
+      await dataset.createTable( userId, { schema : BlogPost } )
     }
 
     // should be good to insert
@@ -56,5 +76,6 @@ async function get( bq, userId ) {
 module.exports = {
   decriptToken,
   insert,
-  get
+  get,
+  setup,
 }

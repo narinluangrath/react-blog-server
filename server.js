@@ -4,7 +4,7 @@ const bodyParser = require( 'body-parser' )
 const BigQuery = require( '@google-cloud/bigquery' )
 
 const createRouting = require( './routes' )
-const { KEY_FILENAME, PROJECT_ID } = require( './config' )
+const { KEY_FILENAME, PROJECT_ID, PORT } = require( './config' )
 
 // Create express app, load middleware, routing
 const app = express()
@@ -18,5 +18,4 @@ const bq = new BigQuery({
 createRouting( app, bq )
 
 // Start the server
-const PORT = process.env.PORT || 8080
 app.listen( PORT, () => console.log( 'Running on port 8080...' ) )

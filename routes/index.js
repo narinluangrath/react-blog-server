@@ -4,6 +4,7 @@ const utils = require( '../utils' )
 
 function createRouting( app, bq ) {
 
+  // Health check (make sure server is running)
   app.get( '/status', ( req, res ) => {
     res.send( { status : 'ok' } )
   })
@@ -21,6 +22,26 @@ function createRouting( app, bq ) {
     } catch ( e ) {
       
       console.error( 'Error on route / ', e )
+
+    }
+
+  })
+
+  // Setup dataset and table for quicker inserts
+  app.post( '/setup', async ( req, res ) => {
+
+    try {
+
+      const { token } = req.body
+      const userInfo = await utils.decriptToken( token )
+      const userId = userInfo.sub
+
+      await utils.setup( bq, userId )
+      res.send( { status : 'ok' } )
+
+    } catch ( e ) {
+
+      console.error( 'Error on route /setup ', e )
 
     }
 
